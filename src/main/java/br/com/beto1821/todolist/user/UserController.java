@@ -27,3 +27,11 @@ public class UserController {
         }
 
         var passwrodHashred = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+
+        userModel.setPassword(passwrodHashred);
+
+        var userCreated = this.userRepository.save(userModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
+    }
+    
+}
