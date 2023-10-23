@@ -3,10 +3,11 @@ package br.com.beto1821.todolist.filter;
 import java.io.IOException;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
+import br.com.beto1821.todolist.user.IUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 
@@ -15,6 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter{
+
+    @Autowired
+    private IUserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -38,7 +42,15 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                 System.out.println(username);
                 System.out.println(password);
 
-                filterChain.doFilter(request, response);
+                // Validar usuário
+                var user = this.userRepository.findByUsername(username);
+                if (user == null) {
+                    response.sendError(401, "Usuário sem autorização");
+                } else {
+
+                    filterChain.doFilter(request, response);
+                }
+
     }
 
 
